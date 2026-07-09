@@ -1,0 +1,93 @@
+import os
+import shutil
+
+# ==========================================================
+# FILE ORGANIZER
+# Author: ChatGPT
+# ==========================================================
+
+# CHANGE THIS PATH TO THE FOLDER YOU WANT TO ORGANIZE
+SOURCE_FOLDER = r"C:\Users\YourName\Downloads"
+
+# File categories
+FILE_TYPES = {
+    "Images": [
+        ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg"
+    ],
+    "Videos": [
+        ".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv"
+    ],
+    "Music": [
+        ".mp3", ".wav", ".aac", ".ogg", ".flac"
+    ],
+    "Documents": [
+        ".pdf", ".doc", ".docx", ".txt",
+        ".ppt", ".pptx",
+        ".xls", ".xlsx",
+        ".csv"
+    ],
+    "Archives": [
+        ".zip", ".rar", ".7z", ".tar", ".gz"
+    ],
+    "Programs": [
+        ".exe", ".msi"
+    ],
+    "Python": [
+        ".py"
+    ]
+}
+
+
+def create_folders():
+    """Create destination folders if they don't exist."""
+    for folder in FILE_TYPES.keys():
+        os.makedirs(os.path.join(SOURCE_FOLDER, folder), exist_ok=True)
+
+    os.makedirs(os.path.join(SOURCE_FOLDER, "Others"), exist_ok=True)
+
+
+def get_destination(file_extension):
+    """Return the destination folder based on extension."""
+    for folder, extensions in FILE_TYPES.items():
+        if file_extension.lower() in extensions:
+            return folder
+    return "Others"
+
+
+def organize():
+    moved = 0
+
+    create_folders()
+
+    for filename in os.listdir(SOURCE_FOLDER):
+
+        full_path = os.path.join(SOURCE_FOLDER, filename)
+
+        if os.path.isdir(full_path):
+            continue
+
+        extension = os.path.splitext(filename)[1]
+
+        destination_folder = get_destination(extension)
+
+        destination = os.path.join(
+            SOURCE_FOLDER,
+            destination_folder,
+            filename
+        )
+
+        try:
+            shutil.move(full_path, destination)
+            print(f"Moved: {filename} --> {destination_folder}")
+            moved += 1
+
+        except Exception as e:
+            print(f"Error moving {filename}: {e}")
+
+    print("\n====================================")
+    print(f"Finished! {moved} files organized.")
+    print("====================================")
+
+
+if __name__ == "__main__":
+    organize()
